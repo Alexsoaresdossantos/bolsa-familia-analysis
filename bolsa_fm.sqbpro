@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="bolsa_familia.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="0"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="1386"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="bolsa_familia_2023" custom_title="0" dock_id="3" table="4,18:mainbolsa_familia_2023"/><dock_state state="000000ff00000000fd0000000100000002000005f4000002aefc0100000002fc00000000000005f40000000000fffffffa000000000100000002fb000000160064006f0063006b00420072006f00770073006500310100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500320100000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500330100000000ffffffff0000011f00ffffff000002850000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="bolsa_familia_2023" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="108"/><column index="2" value="94"/><column index="3" value="29"/><column index="4" value="136"/><column index="6" value="117"/><column index="7" value="93"/><column index="8" value="300"/><column index="9" value="84"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1">CREATE TABLE bolsa_familia_2025_uf AS
+SELECT	
+  mes_competencia,
+  uf,
+  count(mes_competencia) as qtd_parcelas,
+  ROUND(SUM(valor_parcela)/1000000.0, 2) AS valor_parcela_mi,
+  ROUND(AVG(valor_parcela)) AS media_parcela,
+  ROUND(
+    SQRT(
+      (AVG(valor_parcela * valor_parcela) - AVG(valor_parcela) * AVG(valor_parcela))
+    )
+  ) AS desvio_padrao,
+  substr(mes_competencia, 1, 4) || '-' || substr(mes_competencia, 5, 2) || '-01' AS data
+FROM 
+  bolsa_familia_2025
+GROUP BY 
+  mes_competencia,
+  uf;
+
+</sql><sql name="Criando tabela">CREATE TABLE bolsa_familia_2025_com_data AS
+SELECT 
+  mes_competencia,
+  count(mes_competencia) AS qtd_pessoas,
+  ROUND(SUM(valor_parcela)/1000000.0, 2) AS valor_parcela_mi,
+  ROUND(AVG(valor_parcela)) AS media_valor_parcela,
+  ROUND(
+    SQRT(
+      (AVG(valor_parcela * valor_parcela) - AVG(valor_parcela) * AVG(valor_parcela))
+    )
+  ) AS desvio_padrao_valor_parcela,
+  -- Nova coluna formatada como data YYYY-MM-DD
+  substr(mes_competencia, 1, 4) || '-' || substr(mes_competencia, 5, 2) || '-01' AS data_formatada
+FROM 
+  bolsa_familia_2025
+GROUP BY 
+  mes_competencia;
+
+</sql><sql name="Group by">SELECT 
+  mes_competencia,
+  uf,
+  count(mes_competencia) AS qtd_pessoas,
+  ROUND(SUM(valor_parcela)/1000000.0, 2) AS valor_parcela_mi,
+  ROUND(AVG(valor_parcela)) AS media_valor_parcela,
+  ROUND(
+    SQRT(
+      (AVG(valor_parcela * valor_parcela) - AVG(valor_parcela) * AVG(valor_parcela))
+    )
+  ) AS desvio_padrao_valor_parcela,
+  -- Nova coluna formatada como data YYYY-MM-DD
+  substr(mes_competencia, 1, 4) || '-' || substr(mes_competencia, 5, 2) || '-01' AS data_formatada
+FROM 
+  bolsa_familia_2025
+GROUP BY 
+  mes_competencia;</sql><sql name="Consolidar tabela">CREATE TABLE bolsa_familia_uf_consolidado as
+SELECT * FROM bolsa_familia_2023_uf
+UNION ALL
+SELECT * FROM bolsa_familia_2024_uf
+UNION ALL
+SELECT * FROM bolsa_familia_2025_uf;
+</sql><sql name="Consulta">SELECT count(*) from bolsa_familia_uf_consolidado;</sql><sql name="Consolidar tabela (1)*">SELECT count(*) from bolsa_familia_232425;</sql><current_tab id="5"/></tab_sql></sqlb_project>
